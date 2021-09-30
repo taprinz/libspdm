@@ -2567,8 +2567,11 @@ boolean spdm_verify_certificate_chain_buffer(IN uint32 base_hash_algo,
 	}
 
 	if (spdm_is_root_certificate(first_cert_buffer, first_cert_buffer_size)) {
-		spdm_hash_all(base_hash_algo, first_cert_buffer, first_cert_buffer_size,
-				calc_root_cert_hash);
+		if (!spdm_hash_all(base_hash_algo, first_cert_buffer, first_cert_buffer_size,
+				calc_root_cert_hash)) {
+		DEBUG((DEBUG_INFO,
+		       "!!! VerifyCertificateChainBuffer - FAIL (calculate cert root hash failed)!!!\n"));
+		}
 		if (const_compare_mem((uint8 *)cert_chain_buffer + sizeof(spdm_cert_chain_t),
 				calc_root_cert_hash, hash_size) != 0) {
 			DEBUG((DEBUG_INFO,

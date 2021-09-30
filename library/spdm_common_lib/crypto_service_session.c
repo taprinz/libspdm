@@ -54,10 +54,12 @@ boolean spdm_calculate_th_for_exchange(
 	if (cert_chain_buffer != NULL) {
 		DEBUG((DEBUG_INFO, "th_message_ct data :\n"));
 		internal_dump_hex(cert_chain_buffer, cert_chain_buffer_size);
-		spdm_hash_all(
+		if (!spdm_hash_all(
 			spdm_context->connection_info.algorithm.base_hash_algo,
 			cert_chain_buffer, cert_chain_buffer_size,
-			cert_chain_buffer_hash);
+			cert_chain_buffer_hash)) {
+			return FALSE;
+		}
 		status = append_managed_buffer(&th_curr, cert_chain_buffer_hash,
 					       hash_size);
 		if (RETURN_ERROR(status)) {
@@ -141,10 +143,12 @@ boolean spdm_calculate_th_for_finish(IN void *context,
 	if (cert_chain_buffer != NULL) {
 		DEBUG((DEBUG_INFO, "th_message_ct data :\n"));
 		internal_dump_hex(cert_chain_buffer, cert_chain_buffer_size);
-		spdm_hash_all(
+		if (!spdm_hash_all(
 			spdm_context->connection_info.algorithm.base_hash_algo,
 			cert_chain_buffer, cert_chain_buffer_size,
-			cert_chain_buffer_hash);
+			cert_chain_buffer_hash)) {
+			return FALSE;
+		}
 		status = append_managed_buffer(&th_curr, cert_chain_buffer_hash,
 					       hash_size);
 		if (RETURN_ERROR(status)) {
@@ -170,10 +174,12 @@ boolean spdm_calculate_th_for_finish(IN void *context,
 		DEBUG((DEBUG_INFO, "th_message_cm data :\n"));
 		internal_dump_hex(mut_cert_chain_buffer,
 				  mut_cert_chain_buffer_size);
-		spdm_hash_all(
+		if (!spdm_hash_all(
 			spdm_context->connection_info.algorithm.base_hash_algo,
 			mut_cert_chain_buffer, mut_cert_chain_buffer_size,
-			mut_cert_chain_buffer_hash);
+			mut_cert_chain_buffer_hash)) {
+			return FALSE;
+		}
 		status = append_managed_buffer(&th_curr, mut_cert_chain_buffer_hash,
 					       hash_size);
 		if (RETURN_ERROR(status)) {
@@ -246,8 +252,12 @@ spdm_generate_key_exchange_rsp_signature(IN spdm_context_t *spdm_context,
 	}
 
 	// debug only
-	spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
+	result = spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
 		      th_curr_data, th_curr_data_size, hash_data);
+	if (!result) {
+		DEBUG((DEBUG_INFO, "th_curr hash calculation failed!\n"));
+		return result;
+	}
 	DEBUG((DEBUG_INFO, "th_curr hash - "));
 	internal_dump_data(hash_data, hash_size);
 	DEBUG((DEBUG_INFO, "\n"));
@@ -362,8 +372,12 @@ boolean spdm_verify_key_exchange_rsp_signature(
 	}
 
 	// debug only
-	spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
+	result = spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
 		      th_curr_data, th_curr_data_size, hash_data);
+	if (!result) {
+		DEBUG((DEBUG_INFO, "th_curr hash calculation failed!\n"));
+		return result;
+	}
 	DEBUG((DEBUG_INFO, "th_curr hash - "));
 	internal_dump_data(hash_data, hash_size);
 	DEBUG((DEBUG_INFO, "\n"));
@@ -522,8 +536,12 @@ boolean spdm_generate_finish_req_signature(IN spdm_context_t *spdm_context,
 	}
 
 	// debug only
-	spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
+	result = spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
 		      th_curr_data, th_curr_data_size, hash_data);
+	if (!result) {
+		DEBUG((DEBUG_INFO, "th_curr hash calculation failed!\n"));
+		return result;
+	}
 	DEBUG((DEBUG_INFO, "th_curr hash - "));
 	internal_dump_data(hash_data, hash_size);
 	DEBUG((DEBUG_INFO, "\n"));
@@ -664,8 +682,12 @@ boolean spdm_verify_finish_req_signature(IN spdm_context_t *spdm_context,
 	}
 
 	// debug only
-	spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
+	result = spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
 		      th_curr_data, th_curr_data_size, hash_data);
+	if (!result) {
+		DEBUG((DEBUG_INFO, "th_curr hash calculation failed!\n"));
+		return result;
+	}
 	DEBUG((DEBUG_INFO, "th_curr hash - "));
 	internal_dump_data(hash_data, hash_size);
 	DEBUG((DEBUG_INFO, "\n"));
@@ -1170,8 +1192,12 @@ return_status spdm_calculate_th1_hash(IN void *context,
 		return RETURN_SECURITY_VIOLATION;
 	}
 
-	spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
+	result = spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
 		      th_curr_data, th_curr_data_size, th1_hash_data);
+	if (!result) {
+		DEBUG((DEBUG_INFO, "th1 hash calculation failed!\n"));
+		return result;
+	}
 	DEBUG((DEBUG_INFO, "th1 hash - "));
 	internal_dump_data(th1_hash_data, hash_size);
 	DEBUG((DEBUG_INFO, "\n"));
@@ -1262,8 +1288,12 @@ return_status spdm_calculate_th2_hash(IN void *context,
 		return RETURN_SECURITY_VIOLATION;
 	}
 
-	spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
+	result = spdm_hash_all(spdm_context->connection_info.algorithm.base_hash_algo,
 		      th_curr_data, th_curr_data_size, th2_hash_data);
+	if (!result) {
+		DEBUG((DEBUG_INFO, "th2 hash calculation failed!\n"));
+		return result;
+	}
 	DEBUG((DEBUG_INFO, "th2 hash - "));
 	internal_dump_data(th2_hash_data, hash_size);
 	DEBUG((DEBUG_INFO, "\n"));

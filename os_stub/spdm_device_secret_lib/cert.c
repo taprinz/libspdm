@@ -85,8 +85,14 @@ boolean read_responder_root_public_certificate(IN uint32 base_hash_algo,
 	cert_chain->length = (uint16)cert_chain_size;
 	cert_chain->reserved = 0;
 
-	spdm_hash_all(base_hash_algo, file_data, file_size,
+	res = spdm_hash_all(base_hash_algo, file_data, file_size,
 		      (uint8 *)(cert_chain + 1));
+	if (!res) {
+		free(file_data);
+		free(cert_chain);
+		return res;
+	}
+
 	copy_mem((uint8 *)cert_chain + sizeof(spdm_cert_chain_t) + digest_size,
 		 file_data, file_size);
 
@@ -165,8 +171,15 @@ boolean read_requester_root_public_certificate(IN uint32 base_hash_algo,
 	}
 	cert_chain->length = (uint16)cert_chain_size;
 	cert_chain->reserved = 0;
-	spdm_hash_all(base_hash_algo, file_data, file_size,
+
+	res = spdm_hash_all(base_hash_algo, file_data, file_size,
 		      (uint8 *)(cert_chain + 1));
+	if (!res) {
+		free(file_data);
+		free(cert_chain);
+		return res;
+	}
+
 	copy_mem((uint8 *)cert_chain + sizeof(spdm_cert_chain_t) + digest_size,
 		 file_data, file_size);
 
@@ -263,8 +276,14 @@ boolean read_responder_public_certificate_chain(
 		return res;
 	}
 
-	spdm_hash_all(base_hash_algo, root_cert, root_cert_len,
+	res = spdm_hash_all(base_hash_algo, root_cert, root_cert_len,
 		      (uint8 *)(cert_chain + 1));
+	if (!res) {
+		free(file_data);
+		free(cert_chain);
+		return res;
+	}
+
 	copy_mem((uint8 *)cert_chain + sizeof(spdm_cert_chain_t) + digest_size,
 		 file_data, file_size);
 
@@ -361,8 +380,14 @@ boolean read_requester_public_certificate_chain(
 		return res;
 	}
 
-	spdm_hash_all(base_hash_algo, root_cert, root_cert_len,
+	res = spdm_hash_all(base_hash_algo, root_cert, root_cert_len,
 		      (uint8 *)(cert_chain + 1));
+	if (!res) {
+		free(file_data);
+		free(cert_chain);
+		return res;
+	}
+
 	copy_mem((uint8 *)cert_chain + sizeof(spdm_cert_chain_t) + digest_size,
 		 file_data, file_size);
 
@@ -433,8 +458,14 @@ boolean read_responder_root_public_certificate_by_size(
 	cert_chain->length = (uint16)cert_chain_size;
 	cert_chain->reserved = 0;
 
-	spdm_hash_all(base_hash_algo, file_data, file_size,
+	res = spdm_hash_all(base_hash_algo, file_data, file_size,
 		      (uint8 *)(cert_chain + 1));
+	if (!res) {
+		free(file_data);
+		free(cert_chain);
+		return res;
+	}
+
 	copy_mem((uint8 *)cert_chain + sizeof(spdm_cert_chain_t) + digest_size,
 		 file_data, file_size);
 
@@ -525,8 +556,14 @@ boolean read_responder_public_certificate_chain_by_size(
 		return res;
 	}
 
-	spdm_hash_all(base_hash_algo, root_cert, root_cert_len,
+	res = spdm_hash_all(base_hash_algo, root_cert, root_cert_len,
 		      (uint8 *)(cert_chain + 1));
+	if (!res) {
+		free(file_data);
+		free(cert_chain);
+		return res;
+	}
+
 	copy_mem((uint8 *)cert_chain + sizeof(spdm_cert_chain_t) + digest_size,
 		 file_data, file_size);
 
