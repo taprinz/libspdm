@@ -78,5 +78,10 @@ int myrand(void *rng_state, unsigned char *output, size_t len)
 
 	success = random_bytes(output, len);
 
+	//
+	// Random function f_rng (which myrand implements) is not documented
+	// in mbedtls code. From looking at mbedtls code, it interprets 0 as
+	// success, and nonzero as failure, so we use that convention here.
+	//
 	return success ? 0 : -1;
 }
