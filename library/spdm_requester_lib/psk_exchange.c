@@ -136,7 +136,10 @@ return_status try_spdm_send_receive_psk_exchange(
 	DEBUG((DEBUG_INFO, "\n"));
 	ptr += spdm_request.psk_hint_length;
 
-	spdm_get_random_number(DEFAULT_CONTEXT_LENGTH, ptr);
+	result = spdm_get_random_number(DEFAULT_CONTEXT_LENGTH, ptr);
+	if (!result) {
+		return RETURN_DEVICE_ERROR;
+	}
 	DEBUG((DEBUG_INFO, "ClientRandomData (0x%x) - ",
 	       spdm_request.context_length));
 	internal_dump_data(ptr, spdm_request.context_length);

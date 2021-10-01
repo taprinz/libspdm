@@ -26,6 +26,7 @@ spdm_get_encap_request_key_update(IN spdm_context_t *spdm_context,
 {
 	spdm_key_update_request_t *spdm_request;
 	uint32 session_id;
+	boolean result;
 	spdm_session_info_t *session_info;
 	spdm_session_state_t session_state;
 
@@ -69,14 +70,20 @@ spdm_get_encap_request_key_update(IN spdm_context_t *spdm_context,
 		spdm_request->header.param1 =
 			SPDM_KEY_UPDATE_OPERATIONS_TABLE_UPDATE_KEY;
 		spdm_request->header.param2 = 0;
-		spdm_get_random_number(sizeof(spdm_request->header.param2),
+		result = spdm_get_random_number(sizeof(spdm_request->header.param2),
 				       &spdm_request->header.param2);
+		if (!result) {
+			return RETURN_DEVICE_ERROR;
+		}
 	} else {
 		spdm_request->header.param1 =
 			SPDM_KEY_UPDATE_OPERATIONS_TABLE_VERIFY_NEW_KEY;
 		spdm_request->header.param2 = 1;
-		spdm_get_random_number(sizeof(spdm_request->header.param2),
+		result = spdm_get_random_number(sizeof(spdm_request->header.param2),
 				       &spdm_request->header.param2);
+		if (!result) {
+			return RETURN_DEVICE_ERROR;
+		}
 
 		// Create new key
 		DEBUG((DEBUG_INFO,

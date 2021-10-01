@@ -111,7 +111,12 @@ return_status spdm_get_encap_response_challenge_auth(
 	spdm_generate_cert_chain_hash(spdm_context, slot_id, ptr);
 	ptr += hash_size;
 
-	spdm_get_random_number(SPDM_NONCE_SIZE, ptr);
+	result = spdm_get_random_number(SPDM_NONCE_SIZE, ptr);
+	if (!result) {
+		return spdm_generate_encap_error_response(
+			spdm_context, SPDM_ERROR_CODE_UNSPECIFIED, 0,
+			response_size, response);
+	}
 	ptr += SPDM_NONCE_SIZE;
 
 	ptr += measurement_summary_hash_size;

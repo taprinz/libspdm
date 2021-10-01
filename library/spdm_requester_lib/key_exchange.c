@@ -102,7 +102,11 @@ return_status try_spdm_send_receive_key_exchange(
 	spdm_request.header.request_response_code = SPDM_KEY_EXCHANGE;
 	spdm_request.header.param1 = measurement_hash_type;
 	spdm_request.header.param2 = slot_id;
-	spdm_get_random_number(SPDM_RANDOM_DATA_SIZE, spdm_request.random_data);
+	result = spdm_get_random_number(SPDM_RANDOM_DATA_SIZE,
+		spdm_request.random_data);
+	if (!result) {
+		return RETURN_DEVICE_ERROR;
+	}
 	DEBUG((DEBUG_INFO, "ClientRandomData (0x%x) - ",
 	       SPDM_RANDOM_DATA_SIZE));
 	internal_dump_data(spdm_request.random_data, SPDM_RANDOM_DATA_SIZE);

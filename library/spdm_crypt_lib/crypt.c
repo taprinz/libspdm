@@ -2076,12 +2076,13 @@ boolean spdm_aead_decryption(IN uint16 aead_cipher_suite, IN const uint8 *key,
   @param  spdm_context                  A pointer to the SPDM context.
   @param  size                         size of random bytes to generate.
   @param  rand                         Pointer to buffer to receive random value.
-**/
-void spdm_get_random_number(IN uintn size, OUT uint8 *rand)
-{
-	random_bytes(rand, size);
 
-	return;
+  @retval  TRUE   random number generation success.
+  @retval  FALSE  random number generation fail.
+**/
+boolean spdm_get_random_number(IN uintn size, OUT uint8 *rand)
+{
+	return random_bytes(rand, size);
 }
 
 /**

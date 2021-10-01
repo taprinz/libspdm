@@ -244,7 +244,12 @@ return_status spdm_get_response_psk_exchange(IN void *context,
 	ptr += measurement_summary_hash_size;
 
 	if (context_length != 0) {
-		spdm_get_random_number(context_length, ptr);
+		result = spdm_get_random_number(context_length, ptr);
+		if (!result) {
+			return spdm_generate_error_response(spdm_context,
+					SPDM_ERROR_CODE_UNSPECIFIED, 0,
+					response_size, response);
+		}
 		ptr += context_length;
 	}
 

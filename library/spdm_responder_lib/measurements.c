@@ -35,7 +35,10 @@ boolean spdm_create_measurement_signature(IN spdm_context_t *spdm_context,
 	ptr = (void *)((uint8 *)response_message + response_message_size -
 		       measurment_sig_size);
 
-	spdm_get_random_number(SPDM_NONCE_SIZE, ptr);
+	result = spdm_get_random_number(SPDM_NONCE_SIZE, ptr);
+	if (!result) {
+		return FALSE;
+	}
 	ptr += SPDM_NONCE_SIZE;
 
 	*(uint16 *)ptr =
@@ -61,13 +64,17 @@ boolean spdm_create_measurement_signature(IN spdm_context_t *spdm_context,
   @param  spdm_context                  A pointer to the SPDM context.
   @param  response_message              The measurement response message with empty signature to be filled.
   @param  response_message_size          Total size in bytes of the response message including signature.
+
+  @retval TRUE  opaque data is created.
+  @retval FALSE opaque data is not created.
 **/
-void spdm_create_measurement_opaque(IN spdm_context_t *spdm_context,
+ boolean spdm_create_measurement_opaque(IN spdm_context_t *spdm_context,
 				    IN OUT void *response_message,
 				    IN uintn response_message_size)
 {
 	uint8 *ptr;
 	uintn measurment_no_sig_size;
+	boolean result;
 
 	measurment_no_sig_size =
 		SPDM_NONCE_SIZE + sizeof(uint16) +
@@ -76,7 +83,10 @@ void spdm_create_measurement_opaque(IN spdm_context_t *spdm_context,
 	ptr = (void *)((uint8 *)response_message + response_message_size -
 		       measurment_no_sig_size);
 
-	spdm_get_random_number(SPDM_NONCE_SIZE, ptr);
+	result = spdm_get_random_number(SPDM_NONCE_SIZE, ptr);
+	if (!result) {
+		return FALSE;
+	}
 	ptr += SPDM_NONCE_SIZE;
 	
 	*(uint16 *)ptr =
@@ -86,7 +96,7 @@ void spdm_create_measurement_opaque(IN spdm_context_t *spdm_context,
 		 spdm_context->local_context.opaque_measurement_rsp_size);
 	ptr += spdm_context->local_context.opaque_measurement_rsp_size;
 
-	return;
+	return TRUE;
 }
 
 /**
@@ -310,9 +320,14 @@ return_status spdm_get_response_measurements(IN void *context,
 				spdm_response->header.param2 = slot_id_param;
 			}
 		} else {
-			spdm_create_measurement_opaque(spdm_context,
+			ret = spdm_create_measurement_opaque(spdm_context,
 						       spdm_response,
 						       spdm_response_size);
+			if (!ret) {
+				return spdm_generate_error_response(spdm_context,
+					SPDM_ERROR_CODE_UNSPECIFIED, 0,
+					response_size, response);
+			}
 		}
 		break;
 
@@ -396,9 +411,14 @@ return_status spdm_get_response_measurements(IN void *context,
 				spdm_response->header.param2 = slot_id_param;
 			}
 		} else {
-			spdm_create_measurement_opaque(spdm_context,
+			ret = spdm_create_measurement_opaque(spdm_context,
 						       spdm_response,
 						       spdm_response_size);
+			if (!ret) {
+				return spdm_generate_error_response(spdm_context,
+					SPDM_ERROR_CODE_UNSPECIFIED, 0,
+					response_size, response);
+			}
 		}
 		break;
 
@@ -483,9 +503,14 @@ return_status spdm_get_response_measurements(IN void *context,
 						slot_id_param;
 				}
 			} else {
-				spdm_create_measurement_opaque(
+				ret = spdm_create_measurement_opaque(
 					spdm_context, spdm_response,
 					spdm_response_size);
+				if (!ret) {
+					return spdm_generate_error_response(spdm_context,
+						SPDM_ERROR_CODE_UNSPECIFIED, 0,
+						response_size, response);
+				}
 			}
 		} else {
 			//Block not found

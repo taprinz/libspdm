@@ -74,7 +74,9 @@ boolean random_bytes(OUT uint8 *output, IN uintn size)
 
 int myrand(void *rng_state, unsigned char *output, size_t len)
 {
-	random_bytes(output, len);
+	boolean success;
 
-	return 0;
+	success = random_bytes(output, len);
+
+	return success ? 0 : -1;
 }

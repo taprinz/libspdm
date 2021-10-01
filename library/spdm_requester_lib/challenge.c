@@ -91,7 +91,10 @@ return_status try_spdm_challenge(IN void *context, IN uint8 slot_id,
 	spdm_request.header.request_response_code = SPDM_CHALLENGE;
 	spdm_request.header.param1 = slot_id;
 	spdm_request.header.param2 = measurement_hash_type;
-	spdm_get_random_number(SPDM_NONCE_SIZE, spdm_request.nonce);
+	result = spdm_get_random_number(SPDM_NONCE_SIZE, spdm_request.nonce);
+	if (!result) {
+		return RETURN_DEVICE_ERROR;
+	}
 	DEBUG((DEBUG_INFO, "ClientNonce - "));
 	internal_dump_data(spdm_request.nonce, SPDM_NONCE_SIZE);
 	DEBUG((DEBUG_INFO, "\n"));

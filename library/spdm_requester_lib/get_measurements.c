@@ -146,7 +146,10 @@ return_status try_spdm_get_measurement(IN void *context, IN uint32 *session_id,
 					    sizeof(spdm_request.SlotIDParam);
 		}
 
-		spdm_get_random_number(SPDM_NONCE_SIZE, spdm_request.nonce);
+		result = spdm_get_random_number(SPDM_NONCE_SIZE, spdm_request.nonce);
+		if (!result) {
+			return RETURN_DEVICE_ERROR;
+		}
 		DEBUG((DEBUG_INFO, "ClientNonce - "));
 		internal_dump_data(spdm_request.nonce, SPDM_NONCE_SIZE);
 		DEBUG((DEBUG_INFO, "\n"));

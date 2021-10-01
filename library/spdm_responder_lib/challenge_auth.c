@@ -160,7 +160,12 @@ return_status spdm_get_response_challenge_auth(IN void *context,
 	spdm_generate_cert_chain_hash(spdm_context, slot_id, ptr);
 	ptr += hash_size;
 
-	spdm_get_random_number(SPDM_NONCE_SIZE, ptr);
+	result = spdm_get_random_number(SPDM_NONCE_SIZE, ptr);
+	if (!result) {
+		return spdm_generate_error_response(spdm_context,
+					     SPDM_ERROR_CODE_UNSPECIFIED, 0,
+					     response_size, response);
+	}
 	ptr += SPDM_NONCE_SIZE;
 
 	result = spdm_generate_measurement_summary_hash(

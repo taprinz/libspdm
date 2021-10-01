@@ -212,8 +212,14 @@ return_status spdm_get_response_key_exchange(IN void *context,
 		spdm_response->req_slot_id_param = 0;
 	}
 
-	spdm_get_random_number(SPDM_RANDOM_DATA_SIZE,
+	result = spdm_get_random_number(SPDM_RANDOM_DATA_SIZE,
 			       spdm_response->random_data);
+	if (!result) {
+		spdm_free_session_id(spdm_context, session_id);
+		return spdm_generate_error_response(spdm_context,
+					     SPDM_ERROR_CODE_UNSPECIFIED, 0,
+					     response_size, response);
+	}
 
 	ptr = (void *)(spdm_response + 1);
 	dhe_context = spdm_secured_message_dhe_new(

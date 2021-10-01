@@ -28,6 +28,7 @@ return_status spdm_key_update(IN void *context, IN uint32 session_id,
 	spdm_key_update_request_t spdm_request;
 	spdm_key_update_response_t spdm_response;
 	uintn spdm_response_size;
+	boolean result;
 	spdm_key_update_action_t action;
 	spdm_context_t *spdm_context;
 	spdm_session_info_t *session_info;
@@ -77,8 +78,11 @@ return_status spdm_key_update(IN void *context, IN uint32 session_id,
 			SPDM_KEY_UPDATE_OPERATIONS_TABLE_UPDATE_ALL_KEYS;
 	}
 	spdm_request.header.param2 = 0;
-	spdm_get_random_number(sizeof(spdm_request.header.param2),
+	result = spdm_get_random_number(sizeof(spdm_request.header.param2),
 			       &spdm_request.header.param2);
+	if (!result) {
+		return RETURN_DEVICE_ERROR;
+	}
 
 	// Create new key
 	if ((action & SPDM_KEY_UPDATE_ACTION_RESPONDER) != 0) {
@@ -147,8 +151,11 @@ return_status spdm_key_update(IN void *context, IN uint32 session_id,
 	spdm_request.header.param1 =
 		SPDM_KEY_UPDATE_OPERATIONS_TABLE_VERIFY_NEW_KEY;
 	spdm_request.header.param2 = 1;
-	spdm_get_random_number(sizeof(spdm_request.header.param2),
+	result = spdm_get_random_number(sizeof(spdm_request.header.param2),
 			       &spdm_request.header.param2);
+	if (!result) {
+		return RETURN_DEVICE_ERROR;
+	}
 
 	status = spdm_send_spdm_request(spdm_context, &session_id,
 					sizeof(spdm_request), &spdm_request);
